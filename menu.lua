@@ -1,6 +1,7 @@
-local love = require "love"
 
-local buttons = {}
+
+buttons = {}
+
 function newButton(text, fn)
   return {
     text = text,
@@ -10,22 +11,31 @@ function newButton(text, fn)
   }
   end
 
+ScreenLock = 0
 
 function loadMenu()
+  ScreenLock = 0
+  buttons = {}
   table.insert(buttons, newButton("Single player", 
     function()
-      Game.menu = false
-      Game.single = true
+      loadSelect()
     end))
     table.insert(buttons, newButton("Multi player", 
     function()
       Game.menu = false
+      compRole = 0
+      loadField()
       Game.multiPlayer = true
     end))
     table.insert(buttons, newButton("Computer vs Computer", 
     function()
       Game.menu = false
+      loadField()
       Game.CompVsComp = true
+    end))
+    table.insert(buttons, newButton("Settings", 
+    function()
+      loadSettings()
     end))
     table.insert(buttons, newButton("Exit", 
     function()
@@ -34,7 +44,7 @@ function loadMenu()
   font = love.graphics.newFont(30)
 end
 function drawMenu()
-  local ww = love.graphics.getWidth()
+      local ww = love.graphics.getWidth()
       local wh = love.graphics.getHeight()
       local button_width = ww * (1/2)
       local button_height = 55
@@ -55,7 +65,7 @@ function drawMenu()
           color = {0.8, 0.8, 0.9, 1.0}
         end
         button.now = love.mouse.isDown(1)
-        if button.now and not button.last and hot then
+        if button.now and not button.last and hot and ScreenLock > 15 then
           button.fn()
           end
         love.graphics.setColor(unpack(color))
@@ -69,4 +79,7 @@ function drawMenu()
         local textH = font:getHeight(button.text)
         love.graphics.print(button.text, font, (ww* 0.5) - textW * 0.5 , by + textH * 0.3 )
       end
+      if ScreenLock < 16 then
+      ScreenLock = ScreenLock + 1
+    end
   end
